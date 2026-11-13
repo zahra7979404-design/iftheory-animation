@@ -4,7 +4,7 @@ import { Hero } from './Hero';
 import { CinematicWorld } from './CinematicWorld';
 import { LongformEpisodeData, getDurationInFrames } from './types';
 
-const Scene: React.FC<{ scene: LongformEpisodeData['scenes'][number]; frame: number; fps: number; index: number }> = ({ scene, frame, fps, index }) => {
+const Scene: React.FC<{ scene: LongformEpisodeData['scenes'][number]; frame: number; fps: number; index: number; elapsedBefore: number; episodeSeconds: number }> = ({ scene, frame, fps, index, elapsedBefore, episodeSeconds }) => {
   const total = Math.max(1, scene.durationSeconds * fps);
   const progress = Math.min(1, Math.max(0, frame / total));
   const fadeIn = interpolate(frame, [0, 18], [0, 1], { extrapolateRight: 'clamp' });
@@ -77,10 +77,10 @@ const Scene: React.FC<{ scene: LongformEpisodeData['scenes'][number]; frame: num
       </svg>
       {/* Diegetic science HUD: live readouts that change with the story beat. */}
       {(() => {
-        const elapsed = Math.max(0, Math.floor(frame / fps));
-        const gravity = scene.id === 'opening' ? '9.81' : scene.id === 'gravity-returns' ? '9.81' : '0.00';
-        const status = scene.id === 'opening' ? 'STABLE' : scene.id === 'gravity-returns' ? 'RESTORED' : 'OFFLINE';
-        const speed = scene.id === 'opening' ? '0' : scene.id === 'gravity-break' ? String(18 + elapsed * 7) : scene.id === 'city-chaos' ? String(124 + elapsed * 11) : String(Math.max(0, 352 - elapsed * 28));
+        const elapsed = Math.max(0, Math.floor(elapsedBefore + frame / fps));
+        const gravity = scene.id === 'opening' || scene.id === 'gravity-returns' ? '9.81' : '0.00';
+        const status = scene.id === 'opening' ? 'NORMAL' : scene.id === 'gravity-returns' ? 'RESTORED' : 'ZERO-G';
+        const remaining = Math.max(0, episodeSeconds - elapsed);
         const panel = { background:'rgba(4,12,27,.78)', border:'1px solid rgba(102,210,255,.72)', boxShadow:'0 0 22px rgba(38,164,255,.16), inset 0 0 18px rgba(38,164,255,.08)', borderRadius:10, padding:'13px 18px', color:'#DDF6FF', fontFamily:'Arial,sans-serif', letterSpacing:2, backdropFilter:'blur(8px)' } as const;
         const label = { fontSize:13, color:'#79DFFF', fontWeight:800, letterSpacing:3 } as const;
         const value = { fontSize:29, color:status === 'OFFLINE' ? '#FF667B' : '#FFE08A', fontWeight:900, marginTop:5, textShadow:'0 0 14px currentColor' } as const;
@@ -92,16 +92,16 @@ const Scene: React.FC<{ scene: LongformEpisodeData['scenes'][number]; frame: num
           </div>
           <div style={{position:'absolute',right:64,top:54,minWidth:180,textAlign:'right',...panel}}>
             <div style={label}>EVENT TIMER</div>
-            <div style={{fontSize:34,fontWeight:900,color:'#FF6A78',fontVariantNumeric:'tabular-nums',textShadow:'0 0 18px #FF304F'}}>{'00:'+String(Math.max(0,60-elapsed)).padStart(2,'0')}</div>
+            <div style={{fontSize:34,fontWeight:900,color:'#FF6A78',fontVariantNumeric:'tabular-nums',textShadow:'0 0 18px #FF304F'}}>{'00:'+String(remaining).padStart(2,'0')}</div>
             <div style={{fontSize:11,color:'#A9C6D9',marginTop:2}}>SECONDS REMAINING</div>
           </div>
           <div style={{position:'absolute',right:64,bottom:118,minWidth:205,...panel}}>
-            <div style={label}>OBJECT VELOCITY</div>
-            <div style={{...value,color:'#8DE7FF'}}>{speed} <span style={{fontSize:14}}>km/h</span></div>
-            <div style={{fontSize:11,color:'#A9C6D9',marginTop:3}}>SIMULATION READOUT</div>
+            <div style={label}>ELAPSED TIME</div>
+            <div style={{...value,color:'#8DE7FF'}}>{String(elapsed).padStart(2,'0')} <span style={{fontSize:14}}>sec</span></div>
+            <div style={{fontSize:11,color:'#A9C6D9',marginTop:3}}>EVENT TIMELINE</div>
           </div>
           <div style={{position:'absolute',left:64,bottom:118,width:230,height:5,background:'rgba(120,190,220,.2)',borderRadius:5,overflow:'hidden'}}>
-            <div style={{width:(Math.min(1,elapsed/Math.max(1,scene.durationSeconds))*100)+'%',height:'100%',background:'linear-gradient(90deg,#39C8FF,#FFE08A)',boxShadow:'0 0 12px #39C8FF'}}/>
+            <div style={{width:(Math.min(1,elapsed/Math.max(1,episodeSeconds))*100)+'%',height:'100%',background:'linear-gradient(90deg,#39C8FF,#FFE08A)',boxShadow:'0 0 12px #39C8FF'}}/>
           </div>
         </>;
       })()}
@@ -121,12 +121,12 @@ export const LongformEpisode: React.FC<{ episode: LongformEpisodeData }> = ({ ep
     const scene = episode.scenes[i];
     const length = Math.max(1, Math.round(scene.durationSeconds * episode.fps));
     if (frame >= cursor && frame < cursor + length) {
-      return <Scene scene={scene} frame={frame - cursor} fps={episode.fps} index={i}/>;
+      return <Scene scene={scene} frame={frame - cursor} fps={episode.fps} index={i} elapsedBefore={cursor / episode.fps} episodeSeconds={episode.scenes.reduce((sum, item) => sum + item.durationSeconds, 0)}/>;
     }
     cursor += length;
   }
   const last = episode.scenes[episode.scenes.length - 1];
-  return last ? <Scene scene={last} frame={Math.max(0, Math.round(last.durationSeconds * episode.fps) - 1)} fps={episode.fps} index={episode.scenes.length - 1}/> : <AbsoluteFill style={{background:'#080D17'}}/>;
+  return last ? <Scene scene={last} frame={Math.max(0, Math.round(last.durationSeconds * episode.fps) - 1)} fps={episode.fps} index={episode.scenes.length - 1} elapsedBefore={Math.max(0, (episode.scenes.slice(0, -1).reduce((sum, item) => sum + item.durationSeconds, 0)))} episodeSeconds={episode.scenes.reduce((sum, item) => sum + item.durationSeconds, 0)}/> : <AbsoluteFill style={{background:'#080D17'}}/>;
 };
 
 export const longformDuration = getDurationInFrames;
