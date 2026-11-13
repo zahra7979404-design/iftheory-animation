@@ -31,6 +31,7 @@ export type Look = {
   hair: string;
   extra?: 'hood' | 'curls' | 'bunches' | 'bob' | 'suit';
   cap?: boolean;
+  shoeAccent?: string;
 };
 export type CastName = 'pip' | 'pipHood' | 'pipInk' | 'mo' | 'sis' | 'mom' | 'suit';
 export const LOOKS: Record<CastName, Look> = {
@@ -40,7 +41,7 @@ export const LOOKS: Record<CastName, Look> = {
   pipHood: { skin: C.skin, skinShade: C.skinShade, hand: C.skin, jacket: '#2E2B3D', jacketShade: '#24212F', accent: C.jacket, limb: '#2E2B3D', line: '#121019', shoe: C.shoe, face: C.ink, hair: C.ink, extra: 'hood' },
   // C: our channel hero: near-black spherical head, bright facial features, yellow hooded sweatshirt,
   // black cap under the hood, dark cargo-style limbs and black/yellow trainers.
-  pipInk: { skin: '#050609', skinShade: '#090B11', hand: '#080A0F', jacket: '#F4B51B', jacketShade: '#C98712', accent: '#F7C843', limb: '#090B10', line: '#020307', shoe: '#F4B51B', face: '#FFFFFF', hair: '#050609', extra: 'hood', cap: true },
+  pipInk: { skin: '#050609', skinShade: '#090B11', hand: '#080A0F', jacket: '#F4B51B', jacketShade: '#C98712', accent: '#F7C843', limb: '#090B10', line: '#020307', shoe: '#080A10', face: '#FFFFFF', hair: '#050609', extra: 'hood', cap: true, shoeAccent: '#F4B51B' },
   // Mo, Pip's friend: a second recurring character with his own costume (curly hair, headphones round his neck)
   mo: { skin: '#C98E68', skinShade: '#B07A58', hand: '#C98E68', jacket: '#5E6E46', jacketShade: '#4C5A38', accent: '#E9C46A', limb: '#3A3446', line: '#1A1622', shoe: '#D9534F', face: C.ink, hair: '#2A1C18', extra: 'curls' },
   // the formula's recurring cast (beats 5 and 6): Pip's little sister (draw her at about 0.7 of Pip's scale), his mum,
@@ -325,7 +326,10 @@ export const Hero: React.FC<{ pose: Pose; shadow?: number; rimId?: string; look?
     );
   };
   const shoe = (o: { root: P; mid: P; end: P }) => (
-    <ellipse cx={o.end.x + pose.facing * 9} cy={o.end.y + 4} rx={22} ry={11} fill={L.shoe} stroke={L.line} strokeWidth={4} />
+    <g>
+      <ellipse cx={o.end.x + pose.facing * 9} cy={o.end.y + 4} rx={22} ry={11} fill={L.shoe} stroke={L.line} strokeWidth={4} />
+      {L.shoeAccent ? <path d={`M ${o.end.x - 7 + pose.facing * 9} ${o.end.y + 7} Q ${o.end.x + pose.facing * 9} ${o.end.y + 13} ${o.end.x + 13 + pose.facing * 9} ${o.end.y + 6}`} fill="none" stroke={L.shoeAccent} strokeWidth={4} strokeLinecap="round" /> : null}
+    </g>
   );
   // a mitten along the forearm: the palm, the thumb toward the body, two knuckle marks; or a pointing fist
   const hand = (o: { mid: P; end: P }, side: 1 | -1, kind: HandKind) => {
