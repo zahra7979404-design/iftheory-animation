@@ -2,7 +2,7 @@
   "name": "what-if-studio",
   "version": "1.0.0",
   "private": true,
-  "description": "What If animation studio: one topic line in, a finished 15-25 s episode out. Every frame is SVG drawn in code (Remotion).",
+  "description": "What If animation studio: one topic line in, a rendered long-form episode out. Every frame is SVG drawn in code (Remotion).",
   "scripts": {
     "studio": "remotion studio src/index.ts --port 3430",
     "typecheck": "tsc --noEmit"
