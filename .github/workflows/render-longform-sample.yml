@@ -24,7 +24,7 @@ jobs:
           cache: npm
           cache-dependency-path: studio/package-lock.json
       - run: npm ci
-      - name: Render 60-second sample
+      - name: Render 70-second sample
         run: npx remotion render src/index.ts LongformSample out/longform-sample.mp4 --codec=h264 --crf=20
       - name: Upload rendered video
         uses: actions/upload-artifact@v4
