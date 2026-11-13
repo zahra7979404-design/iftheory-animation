@@ -89,7 +89,7 @@ const Scene: React.FC<{ scene: LongformEpisodeData['scenes'][number]; frame: num
           <div style={{position:'absolute',left:64,top:54,minWidth:250,...panel}}>
             <div style={label}>GRAVITY MONITOR</div>
             <div style={value}>{gravity} <span style={{fontSize:14}}>m/s²</span></div>
-            <div style={{fontSize:12,marginTop:5,color:status==='OFFLINE'?'#FF7184':'#8CF0C6'}}>SYSTEM: {status}</div>
+            <div style={{fontSize:12,marginTop:5,color:status==='ZERO-G'?'#FF7184':'#8CF0C6'}}>SYSTEM: {status}</div>
           </div>
           <div style={{position:'absolute',right:64,top:54,minWidth:180,textAlign:'right',...panel}}>
             <div style={label}>EVENT TIMER</div>
