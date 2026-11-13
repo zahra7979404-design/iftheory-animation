@@ -80,7 +80,8 @@ const Scene: React.FC<{ scene: LongformEpisodeData['scenes'][number]; frame: num
         const elapsed = Math.max(0, Math.floor(elapsedBefore + frame / fps));
         const gravity = scene.id === 'opening' || scene.id === 'gravity-returns' ? '9.81' : '0.00';
         const status = scene.id === 'opening' ? 'NORMAL' : scene.id === 'gravity-returns' ? 'RESTORED' : 'ZERO-G';
-        const eventElapsed = Math.max(0, elapsed - 5);\n        const remaining = scene.id === 'opening' ? 60 : scene.id === 'gravity-returns' ? 0 : Math.max(0, 60 - eventElapsed);
+        const eventElapsed = Math.max(0, elapsed - 5);
+        const remaining = scene.id === 'opening' ? 60 : scene.id === 'gravity-returns' ? 0 : Math.max(0, 60 - eventElapsed);
         const panel = { background:'rgba(4,12,27,.78)', border:'1px solid rgba(102,210,255,.72)', boxShadow:'0 0 22px rgba(38,164,255,.16), inset 0 0 18px rgba(38,164,255,.08)', borderRadius:10, padding:'13px 18px', color:'#DDF6FF', fontFamily:'Arial,sans-serif', letterSpacing:2, backdropFilter:'blur(8px)' } as const;
         const label = { fontSize:13, color:'#79DFFF', fontWeight:800, letterSpacing:3 } as const;
         const value = { fontSize:29, color:status === 'ZERO-G' ? '#FF667B' : '#FFE08A', fontWeight:900, marginTop:5, textShadow:'0 0 14px currentColor' } as const;
