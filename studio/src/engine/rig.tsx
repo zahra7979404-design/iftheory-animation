@@ -408,7 +408,7 @@ export const Hero: React.FC<{ pose: Pose; shadow?: number; rimId?: string; look?
       {L.cap ? (
         <g transform={`translate(${-pose.yaw * 12} 0)`}>
           <path d={`M -48 ${HEAD.y - 35} Q -43 ${HEAD.y - 79} 0 ${HEAD.y - 80} Q 43 ${HEAD.y - 79} 48 ${HEAD.y - 35} Q 18 ${HEAD.y - 48} -48 ${HEAD.y - 35} Z`} fill="#080A10" stroke="#020307" strokeWidth={4} />
-          <path d={`M -46 ${HEAD.y - 36} Q 5 ${HEAD.y - 48} 56 ${HEAD.y - 30} Q 44 ${HEAD.y - 17} 0 ${HEAD.y - 22 Q -28 ${HEAD.y - 23} -46 ${HEAD.y - 36} Z`} fill="#111722" stroke="#020307" strokeWidth={4} />
+          <path d={`M -46 ${HEAD.y - 36} Q 5 ${HEAD.y - 48} 56 ${HEAD.y - 30} Q 44 ${HEAD.y - 17} 0 ${HEAD.y - 22} Q -28 ${HEAD.y - 23} -46 ${HEAD.y - 36} Z`} fill="#111722" stroke="#020307" strokeWidth={4} />
           <path d={`M -28 ${HEAD.y - 58} Q -5 ${HEAD.y - 70} 19 ${HEAD.y - 61}`} fill="none" stroke="#303847" strokeWidth={3} strokeLinecap="round" opacity={0.7} />
         </g>
       ) : null}
