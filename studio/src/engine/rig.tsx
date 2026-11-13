@@ -30,6 +30,7 @@ export type Look = {
   face: string;
   hair: string;
   extra?: 'hood' | 'curls' | 'bunches' | 'bob' | 'suit';
+  cap?: boolean;
 };
 export type CastName = 'pip' | 'pipHood' | 'pipInk' | 'mo' | 'sis' | 'mom' | 'suit';
 export const LOOKS: Record<CastName, Look> = {
@@ -37,8 +38,9 @@ export const LOOKS: Record<CastName, Look> = {
   pip: { skin: C.skin, skinShade: C.skinShade, hand: C.skin, jacket: C.jacket, jacketShade: C.jacketShade, accent: C.jacketShade, limb: C.limb, line: C.ink, shoe: C.shoe, face: C.ink, hair: C.ink },
   // B: Pip in a dark hoodie with mustard drawstrings: the body goes dark and catches the rim light, the head stays the brightest thing
   pipHood: { skin: C.skin, skinShade: C.skinShade, hand: C.skin, jacket: '#2E2B3D', jacketShade: '#24212F', accent: C.jacket, limb: '#2E2B3D', line: '#121019', shoe: C.shoe, face: C.ink, hair: C.ink, extra: 'hood' },
-  // C: a dark head with light features, the genre's high-contrast convention, in Pip's mustard
-  pipInk: { skin: '#26232F', skinShade: '#1C1A24', hand: '#26232F', jacket: C.jacket, jacketShade: C.jacketShade, accent: C.jacketShade, limb: '#26232F', line: '#121019', shoe: C.shoe, face: '#F6EFE3', hair: '#26232F' },
+  // C: our channel hero: near-black spherical head, bright facial features, yellow hooded sweatshirt,
+  // black cap under the hood, dark cargo-style limbs and black/yellow trainers.
+  pipInk: { skin: '#050609', skinShade: '#090B11', hand: '#080A0F', jacket: '#F4B51B', jacketShade: '#C98712', accent: '#F7C843', limb: '#090B10', line: '#020307', shoe: '#F4B51B', face: '#FFFFFF', hair: '#050609', extra: 'hood', cap: true },
   // Mo, Pip's friend: a second recurring character with his own costume (curly hair, headphones round his neck)
   mo: { skin: '#C98E68', skinShade: '#B07A58', hand: '#C98E68', jacket: '#5E6E46', jacketShade: '#4C5A38', accent: '#E9C46A', limb: '#3A3446', line: '#1A1622', shoe: '#D9534F', face: C.ink, hair: '#2A1C18', extra: 'curls' },
   // the formula's recurring cast (beats 5 and 6): Pip's little sister (draw her at about 0.7 of Pip's scale), his mum,
@@ -399,6 +401,13 @@ export const Hero: React.FC<{ pose: Pose; shadow?: number; rimId?: string; look?
         <path transform={`translate(${-pose.yaw * 14} 0)`} d={`M -60 ${HEAD.y - 18} Q -64 ${HEAD.y - 70} 4 ${HEAD.y - 68} Q 64 ${HEAD.y - 64} 60 ${HEAD.y - 18} Q 52 ${HEAD.y - 44} 18 ${HEAD.y - 46} L 12 ${HEAD.y - 54} L 6 ${HEAD.y - 46} Q -44 ${HEAD.y - 46} -60 ${HEAD.y - 18} Z`} fill={L.hair} />
       ) : null}
       <Face expr={pose.expr} blink={pose.blink} look={pose.look} glasses={pose.glasses} yaw={pose.yaw} ink={L.face} glint={pose.glint} glintColor={pose.glintColor} />
+      {L.cap ? (
+        <g transform={`translate(${-pose.yaw * 12} 0)`}>
+          <path d={`M -48 ${HEAD.y - 35} Q -43 ${HEAD.y - 79} 0 ${HEAD.y - 80} Q 43 ${HEAD.y - 79} 48 ${HEAD.y - 35} Q 18 ${HEAD.y - 48} -48 ${HEAD.y - 35} Z`} fill="#080A10" stroke="#020307" strokeWidth={4} />
+          <path d={`M -46 ${HEAD.y - 36} Q 5 ${HEAD.y - 48} 56 ${HEAD.y - 30} Q 44 ${HEAD.y - 17} 0 ${HEAD.y - 22 Q -28 ${HEAD.y - 23} -46 ${HEAD.y - 36} Z`} fill="#111722" stroke="#020307" strokeWidth={4} />
+          <path d={`M -28 ${HEAD.y - 58} Q -5 ${HEAD.y - 70} 19 ${HEAD.y - 61}`} fill="none" stroke="#303847" strokeWidth={3} strokeLinecap="round" opacity={0.7} />
+        </g>
+      ) : null}
       {L.extra === 'curls'
         ? [-150, -125, -100, -78, -55, -30].map((deg, k) => {
             const a = (deg * Math.PI) / 180;
