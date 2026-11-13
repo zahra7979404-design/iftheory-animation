@@ -1,0 +1,83 @@
+name: Import animation project archive
+
+on:
+  workflow_dispatch:
+    inputs:
+      archive_path:
+        description: "Path of the uploaded ZIP file"
+        required: true
+        default: "imports/what-if-animation-main.zip"
+
+permissions:
+  contents: write
+
+jobs:
+  import:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Extract project safely
+        env:
+          ARCHIVE_PATH: ${{ inputs.archive_path }}
+        run: |
+          python - <<'PY'
+          import os, pathlib, shutil, tempfile, zipfile
+          archive = pathlib.Path(os.environ["ARCHIVE_PATH"])
+          if not archive.is_file():
+              raise SystemExit(f"Archive not found: {archive}")
+          root = pathlib.Path.cwd().resolve()
+          temp = pathlib.Path(tempfile.mkdtemp())
+          with zipfile.ZipFile(archive) as z:
+              names = z.namelist()
+              files = [n for n in names if not n.endswith("/")]
+              if not files:
+                  raise SystemExit("The ZIP archive is empty.")
+              for name in files:
+                  p = pathlib.PurePosixPath(name)
+                  if p.is_absolute() or ".." in p.parts:
+                      raise SystemExit(f"Unsafe archive path: {name}")
+              # Remove the common top-level folder, if every file shares one.
+              first = {pathlib.PurePosixPath(n).parts[0] for n in files}
+              strip = next(iter(first)) if len(first) == 1 else None
+              for name in files:
+                  parts = pathlib.PurePosixPath(name).parts
+                  rel = pathlib.Path(*parts[1:]) if strip else pathlib.Path(*parts)
+                  if not rel.parts:
+                      continue
+                  target = (temp / rel).resolve()
+                  if temp.resolve() not in target.parents:
+                      raise SystemExit(f"Unsafe extraction target: {name}")
+                  target.parent.mkdir(parents=True, exist_ok=True)
+                  with z.open(name) as src, target.open("wb") as dst:
+                      shutil.copyfileobj(src, dst)
+          for item in temp.iterdir():
+              dest = root / item.name
+              if dest.exists() and dest.is_dir() and item.is_dir():
+                  shutil.copytree(item, dest, dirs_exist_ok=True)
+              elif dest.exists() and dest.is_dir():
+                  shutil.rmtree(dest)
+                  shutil.move(str(item), str(dest))
+              else:
+                  if dest.exists():
+                      dest.unlink()
+                  shutil.move(str(item), str(dest))
+          archive.unlink()
+          imports = archive.parent
+          if imports.exists() and not any(imports.iterdir()):
+              imports.rmdir()
+          print("Project archive extracted successfully.")
+          PY
+
+      - name: Commit imported project
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          if git diff --cached --quiet; then
+            echo "No changes to commit."
+          else
+            git commit -m "Import animation project source"
+            git push
+          fi
