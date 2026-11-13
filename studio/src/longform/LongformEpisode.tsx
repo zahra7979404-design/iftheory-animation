@@ -1,5 +1,5 @@
 import React from 'react';
-import { AbsoluteFill, interpolate } from 'remotion';
+import { AbsoluteFill, interpolate, useCurrentFrame } from 'remotion';
 import { Hero } from './Hero';
 import { CinematicWorld } from './CinematicWorld';
 import { LongformEpisodeData, getDurationInFrames } from './types';
