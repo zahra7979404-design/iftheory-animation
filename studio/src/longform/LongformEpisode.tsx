@@ -31,6 +31,35 @@ const Scene: React.FC<{ scene: LongformEpisodeData['scenes'][number]; frame: num
         </defs>
         <g transform={`translate(${panX + drift + shake} ${panY}) scale(${zoom})`}>
           <CinematicWorld location={scene.location} accent={scene.accent} frame={frame} fps={fps} index={index}/>
+          {scene.id === 'gravity-break' || scene.id === 'city-chaos' ? (
+            <g fill="none" stroke={scene.accent} strokeWidth="8" strokeLinecap="round" strokeLinejoin="round">
+              <g transform={`translate(${250 + Math.sin(frame / 13) * 18} ${610 - (frame * 2.8) % 270}) rotate(-12)`}>
+                <path d="M-105 0 L-75 -42 H55 L95 -8 L115 20 H-115Z" fill="#DCE5F2" stroke="#182338" strokeWidth="8"/>
+                <path d="M-45 -36 H45 L70 -5 H-65Z" fill="#6CA6C8" stroke="#182338" strokeWidth="5"/>
+                <circle cx="-65" cy="22" r="17" fill="#111827" stroke="#AAB8C8" strokeWidth="7"/>
+                <circle cx="70" cy="22" r="17" fill="#111827" stroke="#AAB8C8" strokeWidth="7"/>
+              </g>
+              <g transform={`translate(${1450 + Math.sin(frame / 17) * 28} ${650 - (frame * 3.5) % 340}) rotate(18)`}>
+                <path d="M0 -80 V80 M-42 -35 L0 -80 L42 -35 M-42 35 L0 80 L42 35" stroke="#F4B52C" strokeWidth="12"/>
+                <rect x="-34" y="-18" width="68" height="36" rx="7" fill="#F4B52C" stroke="#17243A" strokeWidth="7"/>
+              </g>
+              {Array.from({length:9},(_,i)=>(
+                <g key={i} transform={`translate(${420 + i*132 + Math.sin(frame/11+i)*22} ${720 - ((frame*2.1+i*67)%430)}) rotate(${i*31+frame*.7})`}>
+                  <rect x="-17" y="-17" width="34" height="34" rx="5" fill={i%2 ? '#9AA9BC' : scene.accent} stroke="#17243A" strokeWidth="5"/>
+                </g>
+              ))}
+            </g>
+          ) : null}
+          {scene.id === 'gravity-returns' ? (
+            <g fill={scene.accent} opacity=".9">
+              {Array.from({length:8},(_,i)=>(
+                <g key={i} transform={`translate(${300+i*185} ${180+((frame*5+i*93)%520)}) rotate(${i*19})`}>
+                  <rect x="-12" y="-12" width="24" height="24" rx="4" stroke="#17243A" strokeWidth="4"/>
+                </g>
+              ))}
+            </g>
+          ) : null}
+
           {/* layered atmospheric shafts, kept subtle so the character remains the focal point */}
           <g opacity=".105">
             <path d="M1180 0 L1510 0 L1030 850 L900 850Z" fill={scene.accent}/>
